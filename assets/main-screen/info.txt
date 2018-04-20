@@ -1,0 +1,6 @@
+mainscreen background size 1440, 900
+bird-tower 160, 320
+dock 160, 160
+factory 160, 320
+port 160, 160
+research 160, 160
