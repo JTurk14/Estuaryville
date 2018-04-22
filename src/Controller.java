@@ -8,46 +8,34 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Timer;
 
-/**
- * Do not modify this file without permission from your TA.
- **/
 public class Controller {
-
-	private Model model;
-	private View view;
-	private Action drawAction;
-
+	private static MainModel model;
+	private static View view;
+	private static Action drawAction;
 	@SuppressWarnings("serial")
 	public Controller() {
-		view = new FishingGameView();
-		/*view.getFrame().addKeyListener(new KeyListener() {
+		model = new MainModel();
+		view = new View();
+		model.setMap(view.getBoard());//ILLEGAL?
+		view.getFrame().addKeyListener(new KeyListener() {
 			@Override
-			public void keyPressed(KeyEvent ke) {	
-			}
+			public void keyPressed(KeyEvent ke) {
+				switch(ke.getKeyCode()) {
 
+				}
+			}
 			@Override
 			public void keyReleased(KeyEvent ke) {
-			}
 
+			}
 			@Override
 			public void keyTyped(KeyEvent ke) {
 
 			}
-		});*/
-		/*
-		view.getButton().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(model.getState() == OrcState.HALT){
-					model.setState(OrcState.FORWARD);
-				}else{
-					model.setState(OrcState.HALT);
-				}
-			}
-		});*/
-		model = new FishingGameModel(view.getWidth(), view.getHeight());
+		});
+		generateMapListeners();
+		generateSidebarListeners();
 		
-		//model = new Model(view.getWidth(), view.getHeight(), view.getImageWidth(), view.getImageHeight());
 		Controller c = this;
 		drawAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -55,12 +43,103 @@ public class Controller {
 			}
 		};
 	}
-
-	// run the simulation
+	
+	public static void generateMapListeners() {
+		for(int i = 0; i < view.getBoard().length; i++) {
+			for(int j = 0; j < view.getBoard()[0].length; j++) {
+				final int x = i;
+				final int y = j;
+				view.getBoard()[i][j].getButton().addActionListener(new ActionListener() {
+					//Way to simplify?? using enum string etc?
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						switch(model.getBuild()) {
+						case PORT:
+							model.build(model.getBuildingTypes().get("Port"), x, y);
+							break;
+						case BIRD:
+							model.build(model.getBuildingTypes().get("Bird"), x, y);
+							break;
+						case FACTORY:
+							model.build(model.getBuildingTypes().get("Factory"), x, y);
+							break;
+						case RESEARCH:
+							model.build(model.getBuildingTypes().get("Research"), x, y);
+							break;
+						case FISH:
+							model.build(model.getBuildingTypes().get("Fish"), x, y);
+							break;
+						case REMOVE:
+							model.removeBuilding(x, y);
+						default:
+							break;
+						}
+					}
+				});
+			}
+		}
+	}
+	
+	public static void generateSidebarListeners() {
+		view.getSidebarButtons().get("Remove").setMnemonic(KeyEvent.VK_P);
+		view.getSidebarButtons().get("Port").addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setBuild(BuildState.PORT);
+				//System.out.println(model.getBuild());
+			}
+		});
+		
+		view.getSidebarButtons().get("Remove").setMnemonic(KeyEvent.VK_B);
+		view.getSidebarButtons().get("Bird Watching Tower").addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setBuild(BuildState.BIRD);
+				//System.out.println(model.getBuild());
+			}
+		});
+		
+		view.getSidebarButtons().get("Remove").setMnemonic(KeyEvent.VK_F);
+		view.getSidebarButtons().get("Factory").addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setBuild(BuildState.FACTORY);
+				//System.out.println(model.getBuild());
+			}
+		});
+		
+		view.getSidebarButtons().get("Remove").setMnemonic(KeyEvent.VK_S);
+		view.getSidebarButtons().get("Research Station").addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setBuild(BuildState.RESEARCH);
+				//System.out.println(model.getBuild());
+			}
+		});
+		
+		view.getSidebarButtons().get("Remove").setMnemonic(KeyEvent.VK_I);
+		view.getSidebarButtons().get("Fishing Pier").addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setBuild(BuildState.FISH);
+				//System.out.println(model.getBuild());
+			}
+		});
+		
+		view.getSidebarButtons().get("Remove").setMnemonic(KeyEvent.VK_R);
+		view.getSidebarButtons().get("Remove").addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setBuild(BuildState.REMOVE);
+				//System.out.println(model.getBuild());
+			}
+		});
+	}
+	
 	public void start() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Timer t = new Timer(30, drawAction);
+				Timer t = new Timer(300, drawAction);
 				t.start();
 			}
 		});
@@ -70,7 +149,7 @@ public class Controller {
 
 	public void redraw() {
 		model.update();
+		//System.out.println(model.getBuild());
 		view.update();
 	}
-
 }
