@@ -1,5 +1,5 @@
-fishing background size 1440, 900
-hook 160, 160
-shad 160, 160
-flounder 160, 160
-sturgeon 160, 160
+fishing background size 1440 900
+hook 160 160
+american-shad 160 160
+sturgeon 160 160
+summer-flounder 160 160

@@ -13,27 +13,51 @@ import javax.swing.Timer;
  **/
 public class Controller {
 
-	private Model model;
-	private View view;
+	private FishingGameModel fishModel;
+	private FishingGameView fishView;
 	private Action drawAction;
 
 	@SuppressWarnings("serial")
 	public Controller() {
-		view = new FishingGameView();
-		/*view.getFrame().addKeyListener(new KeyListener() {
+		fishView = new FishingGameView();
+		fishView.getFrame().addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent ke) {	
+				switch(ke.getKeyCode()){
+				case KeyEvent.VK_UP:
+					fishModel.hook.setYSpeed(-15);
+					break;
+				case KeyEvent.VK_DOWN:
+					fishModel.hook.setYSpeed(15);
+					break;
+				case KeyEvent.VK_LEFT:
+					fishModel.hook.setXSpeed(-15);
+					break;
+				case KeyEvent.VK_RIGHT:
+					fishModel.hook.setXSpeed(15);
+					break;
+				}
 			}
 
 			@Override
 			public void keyReleased(KeyEvent ke) {
+				switch(ke.getKeyCode()){
+				case KeyEvent.VK_UP:
+				case KeyEvent.VK_DOWN:
+					fishModel.hook.setYSpeed(0);
+					break;
+				case KeyEvent.VK_LEFT:
+				case KeyEvent.VK_RIGHT:
+					fishModel.hook.setXSpeed(0);
+					break;
+				}
 			}
 
 			@Override
 			public void keyTyped(KeyEvent ke) {
 
 			}
-		});*/
+		});
 		/*
 		view.getButton().addActionListener(new ActionListener() {
 			@Override
@@ -45,7 +69,7 @@ public class Controller {
 				}
 			}
 		});*/
-		model = new FishingGameModel(view.getWidth(), view.getHeight());
+		fishModel = new FishingGameModel(FishingGameView.getWidth(), FishingGameView.getHeight());
 		
 		//model = new Model(view.getWidth(), view.getHeight(), view.getImageWidth(), view.getImageHeight());
 		Controller c = this;
@@ -69,8 +93,8 @@ public class Controller {
 	}
 
 	public void redraw() {
-		model.update();
-		view.update();
+		fishModel.update();
+		fishView.update(fishModel.getFish(), fishModel.getHook());
 	}
 
 }
