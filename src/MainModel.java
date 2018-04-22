@@ -1,12 +1,14 @@
 import java.util.HashMap;
 
 public class MainModel {
-	private int pollution;
-	private int money;
+	public final int POLLUTION_MAX = 100;
+	public final int MONEY_MAX = 100;
+	private int pollution = 0;
+	private int money = 99;
 	private MapSpot[][] map;
 	private HashMap<String,Building> buildingTypes;
 	private int pollIncr = 1;
-	private int moneyIncr = 1;
+	private int moneyIncr = 0;
 	private BuildState build = BuildState.NONE;
 	private boolean[] placedBuildings = new boolean[BuildState.values().length];
 
@@ -63,18 +65,17 @@ public class MainModel {
 	}
 	
 	public MainModel() {
-		pollution = 0;
-		money = 100;
-		buildingTypes = new HashMap<String,Building>();
-		loadBuildingTypes(buildingTypes);
+		buildingTypes = loadBuildingTypes();
 	}
 	
-	public void loadBuildingTypes(HashMap<String,Building> types) {//legal to import Images here?
+	public HashMap<String,Building> loadBuildingTypes() {//legal to import Images here?
+		HashMap<String,Building> types = new HashMap<String,Building>();
 		types.put("Bird",new Building(0,10000,"Bird Watching Tower","bird-tower"));
 		types.put("Research",new Building(0,10000,"Research Center","research"));
 		types.put("Fish",new Building(0,10000,"Fishing Pier","pier"));
 		types.put("Factory",new Building(0,10000,"Factory","factory"));
 		types.put("Port",new Building(0,10000,"Port","port"));
+		return types;
 	}
 	
 	public void build(Building structure, int xPos, int yPos) {
@@ -102,8 +103,10 @@ public class MainModel {
 	}
 	
 	public void removeBuilding(int xPos, int yPos) {
+		//Building removed = map[xPos][yPos].getB();
 		map[xPos][yPos].setB(null);
-		map[xPos][yPos].getButton().setText("");
+		//map[xPos][yPos].getButton().setText("");
+		//how to set built to false again?
 		build = BuildState.NONE;
 	}
 	
@@ -120,7 +123,7 @@ public class MainModel {
 	}
 	
 	public boolean gameOver() {
-		return false;
+		return this.pollution == POLLUTION_MAX || this.money == MONEY_MAX;
 	}
 	
 	public void update() {

@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,7 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public class View {
+public class MainView {
 	//width/height constants
 	final static int FRAME_WIDTH = 1900;
 	final static int FRAME_HEIGHT = 1000;
@@ -22,6 +23,8 @@ public class View {
 	final static int SIDEBAR_HEIGHT = FRAME_HEIGHT;
 	final static int MAP_WIDTH = FRAME_WIDTH-SIDEBAR_WIDTH;
 	final static int MAP_HEIGHT = FRAME_HEIGHT;
+	final static int BAR_WIDTH = (int) (FRAME_WIDTH*0.01);
+	final static int BAR_HEIGHT = (int) (FRAME_HEIGHT*0.35);
 	//sidebar button constants
 	final static int BUILDING_BUTTON_HEIGHT = (int) (SIDEBAR_HEIGHT*0.1);
 	final static int BUILDING_BUTTON_WIDTH = (int) (SIDEBAR_WIDTH*0.5);
@@ -42,6 +45,11 @@ public class View {
 	final static int MAP_BUTTON_Y = BORDER_WIDTH_Y;
 	final static int MAP_BUTTON_X_OFFSET = MAP_BUTTON_WIDTH;
 	final static int MAP_BUTTON_Y_OFFSET = MAP_BUTTON_HEIGHT;
+	//Pollution/Money Bar constants
+	final static int BAR_X = (int) (FRAME_WIDTH*0.01);
+	final static int BAR_Y = (int) (FRAME_HEIGHT*0.075);
+	final static int BAR_Y_OFFSET = (int) (BAR_HEIGHT+FRAME_HEIGHT*0.1);
+	final static int BAR_ROUND = 20;
 	//other constants
 	//globals
 	private JFrame frame;
@@ -73,25 +81,66 @@ public class View {
 
 	@SuppressWarnings("serial")
 	private class DrawPanel extends JPanel{
+		private int xPos;
+		private int yPos;
+		private int yOffset;
+		
+		private double moneyRatio = 0;
+		private double pollutionRatio = 0;
+		
+		public double getMoneyRatio() {
+			return moneyRatio;
+		}
+		
+		public double getPollutionRatio() {
+			return moneyRatio;
+		}
+		
+		public void setMoneyRatio(double moneyRatio) {
+			if(moneyRatio <= 1)
+				this.moneyRatio = moneyRatio;
+		}
+		
+		public void setPollutionRatio(double pollutionRatio) {
+			if(pollutionRatio <= 1)
+				this.pollutionRatio = pollutionRatio;
+		}
+		
+		public DrawPanel(int x, int y, int yOffset) {
+			xPos = x;
+			yPos = y;
+			this.yOffset = yOffset;
+		}
+		
 		@Override
 		public void paintComponent(Graphics g){
 			super.paintComponent(g);
-			g.setColor(Color.gray);
-			setBackground(Color.gray);
-			//g.drawImage(pics[picNum], xloc, yloc, Color.gray, this);
+			setBackground(new Color(100, 153, 239));
+			
+			Graphics2D g2d = (Graphics2D) g;
+			float thickness = 2;
+			g2d.setStroke(new BasicStroke(thickness));
+			g2d.setColor(Color.BLACK);
+			g2d.drawRoundRect(xPos, yPos, BAR_WIDTH, BAR_HEIGHT,BAR_ROUND,BAR_ROUND);
+			g2d.drawRoundRect(xPos, yPos+yOffset, BAR_WIDTH, BAR_HEIGHT,BAR_ROUND,BAR_ROUND);
+			g2d.setColor(Color.YELLOW);
+			g2d.fillRoundRect(xPos, (int) (yPos+(BAR_HEIGHT*(1-moneyRatio))), BAR_WIDTH, (int) (BAR_HEIGHT - (BAR_HEIGHT*(1-moneyRatio))),BAR_ROUND,BAR_ROUND);
+			g2d.setColor(Color.GREEN);
+			g2d.fillRoundRect(xPos, (int) (yPos+yOffset+(BAR_HEIGHT*(1-pollutionRatio))), BAR_WIDTH, (int) (BAR_HEIGHT - (BAR_HEIGHT*(1-pollutionRatio))),BAR_ROUND,BAR_ROUND);
 		}
 	}
 	
-	public View(){
-		frame = new JFrame();
-		panel = new DrawPanel();
+	public MainView(){
+		frame = new JFrame();		
+		panel = new DrawPanel(BAR_X, BAR_Y, BAR_Y_OFFSET);
 		panel.setLayout(null);
 		
 		addSidebar();
 		addMainMap();
 		
+		frame.setTitle("EstuaryVille");
 		frame.getContentPane().add(panel);
-		frame.setBackground(Color.gray);
+		frame.setBackground(new Color(100, 153, 239));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
 		frame.setVisible(true);
@@ -99,17 +148,10 @@ public class View {
 	
 	public void addSidebar() {
 		ImageIcon[] sidebarImages = loadSidebarImages();
-		//BufferedImage[] sidebarImagesB = loadSidebarImagesB();
-		//for(BufferedImage b : sidebarImagesB) {
-			//System.out.println(b);
-		//}
 		for(int i = 0; i < buildingNames.length; i++) {
 			JButton button = new JButton(buildingNames[i]);//new JButton(buildingNames[i]);
 			button.setBounds(BUILDING_BUTTON_X,BUILDING_BUTTON_Y+(i*BUILDING_BUTTON_Y_OFFSET), BUILDING_BUTTON_WIDTH, BUILDING_BUTTON_HEIGHT);
-			//button.setBounds(BUILDING_BUTTON_X,BUILDING_BUTTON_Y+(i*BUILDING_BUTTON_Y_OFFSET), 160,320);
-			
-			//System.out.println(sidebarImages[i]);
-			
+
 			button.setIcon(sidebarImages[i]);
 			button.setVerticalTextPosition(SwingConstants.BOTTOM);
 			button.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -125,7 +167,7 @@ public class View {
 	public ImageIcon[] loadSidebarImages() {
 		BufferedImage[] bImgs = new BufferedImage[buildingNames.length];
 		ImageIcon[] imgs = new ImageIcon[buildingNames.length];
-
+				
 		try {
 			bImgs[0] = ImageIO.read(new File("assets/port.png"));
 			bImgs[1] = ImageIO.read(new File("assets/bird-tower.png"));
@@ -174,12 +216,9 @@ public class View {
 		BufferedImage[][] bgBImages = new BufferedImage[NUM_MAP_BUTTONS_X][NUM_MAP_BUTTONS_Y];
 		try {
 			BufferedImage background = ImageIO.read(new File("assets/mainscreen.png"));
-			//System.out.println(background.getWidth()+" "+background.getHeight());
 			for(int i = 0; i < NUM_MAP_BUTTONS_X; i++) {
 				for(int j = 0; j < NUM_MAP_BUTTONS_Y; j++) {
 					bgBImages[i][j] = background.getSubimage(i*(background.getWidth()/NUM_MAP_BUTTONS_X), j*(background.getHeight()/NUM_MAP_BUTTONS_Y), background.getWidth()/NUM_MAP_BUTTONS_X, background.getHeight()/NUM_MAP_BUTTONS_Y);
-					//System.out.println(i*NUM_MAP_BUTTONS_X+" "+j*NUM_MAP_BUTTONS_Y+" "+background.getWidth()/NUM_MAP_BUTTONS_X+" "+background.getHeight()/NUM_MAP_BUTTONS_Y);
-					//System.out.println(bgBImages[i][j]);
 					bgImages[i][j] = new ImageIcon(resize(bgBImages[i][j],MAP_BUTTON_WIDTH,MAP_BUTTON_HEIGHT));
 				}
 			}
@@ -189,12 +228,18 @@ public class View {
 		return bgImages;
 	}
 	
-	public void update() {
+	public void update(double money, double poll, MapSpot[][] map) {
+		updateBoard();
+		updateBars(money, poll);
+		this.board = map;
+		panel.repaint();
+	}
+	
+	public void updateBoard() {
 		for(MapSpot[] ms_arr : board) {
 			for(MapSpot ms : ms_arr) {
 				if(ms.getB() != null) {//optimize with boolean?
 					BufferedImage bImage = resize(ms.getB().getImage(),MAP_BUTTON_HEIGHT,MAP_BUTTON_HEIGHT);
-					//System.out.println(bImage);
 					BuildingImage bi = new BuildingImage(ms.getBackground(),new ImageIcon(bImage));
 					ms.setShowImage(bi);
 				}
@@ -203,5 +248,10 @@ public class View {
 				}
 			}
 		}
+	}
+	
+	public void updateBars(double moneyRatio, double pollutionRatio) {
+		panel.setMoneyRatio(moneyRatio);
+		panel.setPollutionRatio(pollutionRatio);
 	}
 }
