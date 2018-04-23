@@ -34,7 +34,7 @@ public class Fish {
 	public Direction getDirection(){return direction;}
 	public void setDirection(Direction dir){direction = dir;}
 	
-	public Species getspecies(){return species;}
+	public Species getSpecies(){return species;}
 	public void setSpecies(Species sp){species = sp;}
 	
 	public int getXPos(){return xPos;}
@@ -44,7 +44,12 @@ public class Fish {
 	public void setYPos(int yp){yPos = yp;}
 	
 	
-	public Fish(){
-		
+	public Fish(Species s, int xS, int yS, Direction dir){
+		species = s;
+		xSpeed = xS;
+		ySpeed = yS;
+		direction = dir;
+		xPos = (int) (Math.random()*FishingGameView.getWidth()/2 + FishingGameView.getWidth()/4);
+		yPos = (int) (Math.random()*FishingGameView.getHeight()/2 + 300);
 	}
 }

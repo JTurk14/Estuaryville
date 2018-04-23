@@ -1,5 +1,5 @@
-Birdwatching background size 1440, 900
-camera 320, 320
-heron 160, 160
-sandpiper 80, 80
-ospery 175, 175
+Birdwatching background size 1440 900
+camera 320 320
+great-blue-heron 160 160
+least-sandpiper 80 80
+osprey 175 175

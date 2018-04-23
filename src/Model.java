@@ -1,14 +1,7 @@
-import java.awt.image.BufferedImage;
-
-/**
- * 
- */
 
 public abstract class Model {
 	final int scrWidth;
 	final int scrHeight;
-	BufferedImage[][] sprites;
-	
 	
 	public Model(int w, int h){
 		this.scrWidth = w;
