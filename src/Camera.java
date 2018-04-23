@@ -1,4 +1,4 @@
-:x
+public class Camera {
 	private int cXPos;
 	private int cYPos;
 	private int cXIncr;
