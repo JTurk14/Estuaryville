@@ -1,25 +1,43 @@
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Timer;
 
+import org.w3c.dom.events.MouseEvent;
+
 /**
  * Do not modify this file without permission from your TA.
  **/
-public class Controller {
+public class FishingGameController {
 
 	private FishingGameModel fishModel;
 	private FishingGameView fishView;
 	private Action drawAction;
 
 	@SuppressWarnings("serial")
-	public Controller() {
+	public FishingGameController() {
 		fishView = new FishingGameView();
+		fishView.getFrame().addMouseListener(new MouseListener(){
+			@Override
+			public void mousePressed(java.awt.event.MouseEvent me) {
+				System.out.println("GetX/Y:["+me.getX() +", "+me.getY()+"]");
+			}
+			
+			public void mouseClicked(java.awt.event.MouseEvent e) {}
+			public void mouseReleased(java.awt.event.MouseEvent e) {}
+			public void mouseEntered(java.awt.event.MouseEvent e) {}
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		fishView.getFrame().addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent ke) {	
@@ -72,7 +90,7 @@ public class Controller {
 		fishModel = new FishingGameModel(FishingGameView.getWidth(), FishingGameView.getHeight());
 		
 		//model = new Model(view.getWidth(), view.getHeight(), view.getImageWidth(), view.getImageHeight());
-		Controller c = this;
+		FishingGameController c = this;
 		drawAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				c.redraw();
