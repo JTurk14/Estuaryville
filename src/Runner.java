@@ -1,4 +1,9 @@
 public class Runner {
+<<<<<<< HEAD
+	public static void main(String [] args){	
+		BirdWatchingGameController myC = new BirdWatchingGameController();
+		myC.start();
+=======
 	public static void main(String args[]) {
 		Controller control = new Controller();
 		control.start();
@@ -11,5 +16,6 @@ public class Runner {
 		
 		ResearchGameController rcon = new ResearchGameController();
 		rcon.start();
+>>>>>>> master
 	}
 }

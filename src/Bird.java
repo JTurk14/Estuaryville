@@ -1,5 +1,4 @@
 
-import java.awt.Image;
 import java.util.Random;
 
 public class Bird {
@@ -7,16 +6,31 @@ public class Bird {
 	int xPos, yPos;
 	Direction direction;
 	Species species;
-	Image im;
 	
 	public Bird(Species sp) {
 		this.species = sp;
 		Random rand = new Random();
-		this.xSpd = rand.nextInt(50);
-		this.ySpd = rand.nextInt(50);
-		this.xPos = rand.nextInt(BirdWatchingGameView.getWidth());
-		this.yPos = rand.nextInt(BirdWatchingGameView.getHeight());
-		this.direction = Direction.values()[rand.nextInt(8)];
+		if (sp == Bird.Species.BLUE_HERON) {
+			this.xSpd = 0;
+			this.ySpd = 0;
+			this.xPos = 150 + rand.nextInt(540); //keeps Blue Heron on grass
+			this.yPos = 350 + rand.nextInt(200); //keeps Blue Heron on grass
+			this.direction = Direction.values()[rand.nextInt(8)];
+		}
+		else if (sp == Bird.Species.SANDPIPER) {
+			this.xSpd = rand.nextInt(35) + 15;
+			this.ySpd = rand.nextInt(35) + 15;
+			this.xPos = 150 + rand.nextInt(540); //keeps Blue Heron on grass
+			this.yPos = 350 + rand.nextInt(200); //keeps Blue Heron on grass
+			this.direction = Direction.values()[rand.nextInt(8)];
+		}
+		else {
+			this.xSpd = rand.nextInt(35) + 15;
+			this.ySpd = rand.nextInt(35) + 15;
+			this.xPos = rand.nextInt(BirdWatchingGameView.getWidth() - 160); //keeps inside screen bounds
+			this.yPos = rand.nextInt(BirdWatchingGameView.getHeight() - 175); // keeps inside screen bounds
+			this.direction = Direction.values()[rand.nextInt(8)];
+		}
 	}
 	
 	public enum Species{		

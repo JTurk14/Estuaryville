@@ -46,7 +46,7 @@ public class BirdWatchingGameView extends View{
 		public void paintComponent(Graphics g){
 			super.paintComponent(g);
 			g.drawImage(background, 0, 0, Color.gray, this);
-			g.drawImage(camera_sprite, camera.getXPos(), camera.getYPos(), this);
+			//System.out.println(frameCount);
 			for (int i = 0; i < birds.length; i++) {
 				Bird b = birds[i];
 				//if(b.getDirection().equals(Direction.WEST))
@@ -54,6 +54,7 @@ public class BirdWatchingGameView extends View{
 				//else
 					//g.drawImage(bird_sprites[b.species.ordinal()*2+1][frameCount], b.getXPos(), b.getYPos(), this);
 			}
+			g.drawImage(camera_sprite, camera.getXPos(), camera.getYPos(), this);
 		}
 	}
 	
@@ -71,9 +72,12 @@ public class BirdWatchingGameView extends View{
 			for (int i = 0; i < numSpecies; i++) {
 				while (!nextLine.contains(Bird.Species.values()[i].name)) {
 					nextLine = scan.next();
+					//System.out.println(nextLine);
 					if (nextLine.contains(Bird.Species.values()[i].name)) {
 						imgWidths[i] = scan.nextInt();
+						//System.out.println("Width: " + imgWidths[i]);
 						imgHeights[i] = scan.nextInt();
+						//System.out.println("Height: " + imgHeights[i]);
 					}
 				}
 				loadBirdSheet(Bird.Species.values()[i], i);
@@ -87,24 +91,13 @@ public class BirdWatchingGameView extends View{
 	private void loadBirdSheet(Bird.Species species, int index) throws IOException{
 		BufferedImage birdSheet = ImageIO.read(new File("assets/bird-game/birds/"
 					+species.name+"-sheet.png"));
-		int numSubImages = 0;
-		switch(index) {
-		case 0:
-			numSubImages = 18;
-			break;
-		case 1:
-			numSubImages = 4;
-			break;
-		case 2: 
-			numSubImages = 16;
-			break;
-		}
-			
+		int numSubImages = 16;	
 		bird_sprites[index] = new BufferedImage[numSubImages];
 		for(int i = 0; i < numSubImages; i++){
 			for (int j = 0; j < imgWidths.length; j++) {
 			}
-			bird_sprites[index][i] = birdSheet.getSubimage(imgWidths[index], 0, imgWidths[index], imgHeights[index]);
+			//System.out.println(imgWidths[index] * i + imgWidths[index]);
+			bird_sprites[index][i] = birdSheet.getSubimage(imgWidths[index] * i, 0, imgWidths[index], imgHeights[index]);
 		}
 	}
 	
@@ -115,7 +108,7 @@ public class BirdWatchingGameView extends View{
 	public void update(Bird[] birdArray, Camera c) {
 		birds = birdArray;
 		camera = c;
-		frameCount = (frameCount + 1) % 4;
+		frameCount = (frameCount + 1) % 16;
 		panel.repaint();
 		try {
 			Thread.sleep(80);
