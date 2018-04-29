@@ -9,9 +9,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Timer;
 
-/**
- * Do not modify this file without permission from your TA.
- **/
 public class ResearchGameController{
 
 	private ResearchGameModel model;
@@ -32,7 +29,7 @@ public class ResearchGameController{
 						model.player.setDirection(RDirection.SOUTHEAST);
 						break;
 					case KeyEvent.VK_LEFT:
-						model.player.setDirection(RDirection.IDEL);
+						model.player.setDirection(RDirection.IDLE);
 						break;
 					case KeyEvent.VK_RIGHT:
 						model.player.setDirection(RDirection.EAST);
@@ -67,6 +64,8 @@ public class ResearchGameController{
 	}
 	public void redraw(){
 		model.updateLocationAndDirection();
+		model.collisionChecker();
+		model.endCheck();
 		view.update(model);
 	}
 

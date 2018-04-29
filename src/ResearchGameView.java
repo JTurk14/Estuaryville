@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -23,9 +24,13 @@ import javax.swing.*;
  **/
 
 public class ResearchGameView{
+	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	int frameCount;
 	int picNum = 0;
+	int CpicNum = 0;
+	Crab[] crabs;
 	BufferedImage[] pics, images;
+	BufferedImage[] Cpics, Cimages;
 	BufferedImage bg;
 	BufferedImage crabIm1;
 	BufferedImage crabIm2;
@@ -33,14 +38,16 @@ public class ResearchGameView{
 	BufferedImage crabIm4;
 	BufferedImage crabIm5;
 	BufferedImage[][] animation;
+	BufferedImage[][] Canimation;
+	
+	final int playerFixedX = (int)screenSize.getWidth() / 8;
+	final int playerFixedY = (int)screenSize.getHeight() / 3;
 	
 	final int frameWidth = 10000;
 	final int frameHeight = 2500;
 	final static int imgWidth = 180;
 	final static int imgHeight = 180;
 	JFrame frame;
-	JButton button;
-	
 	DrawPanel panel = new DrawPanel();
 	int xloc;
 	int yloc;
@@ -55,7 +62,18 @@ public class ResearchGameView{
 	int c5xloc;
 	int c5yloc;
 	int pLives;
+	Rectangle cr1;
+	Rectangle cr2;
+	Rectangle cr3;
+	Rectangle cr4;
+	Rectangle cr5;
+	Rectangle pRect;
 	
+	/**
+	 * @author mattstack
+	 * gets the width of the frame
+	 * @return the width of frame
+	 */
 	public int getWidth(){
 		return frameWidth;
 	}
@@ -71,9 +89,6 @@ public class ResearchGameView{
 	public JFrame getFrame() {
 		return frame;
 	}
-	public JButton getButton() {
-		return button;
-	}
 	
 	public ResearchGameView(){
 		frame = new JFrame();
@@ -81,7 +96,10 @@ public class ResearchGameView{
 		frame.getContentPane().add(panel);	
 		frame.setBackground(Color.white);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1440, 900);
+		screenSize.getWidth();
+		screenSize.getHeight();
+		frame.setSize((int)screenSize.getWidth(), (int)screenSize.getHeight());
+//		frame.setSize(1440, 900);
 		frame.setVisible(true);	
 	}
 	@SuppressWarnings("serial")
@@ -91,21 +109,27 @@ public class ResearchGameView{
 			super.paintComponent(g);
 			
 			if (xloc <= 5100) {
-			g.drawImage(bg, -xloc, -yloc, 7000, 3000, this); //7000 3000
-			g.drawImage(crabIm1, (-c1xloc), (-c1yloc), this);
-			g.drawImage(crabIm2, (-c2xloc), (-c2yloc), this);
-			g.drawImage(crabIm3, (-c3xloc), (-c3yloc), this);
-			g.drawImage(crabIm4, (-c4xloc), (-c4yloc), this);
-			g.drawImage(crabIm5, (-c5xloc), (-c5yloc), this);
-			g.drawImage(pics[picNum], 100, 300, this);
+			g.drawImage(bg, -xloc, -yloc, 7000, 2500, this); //7000 3000
+			g.drawImage(Cpics[CpicNum], (-c1xloc), (-c1yloc), this);
+			g.drawImage(Cpics[CpicNum], (-c2xloc), (-c2yloc), this);
+			g.drawImage(Cpics[CpicNum], (-c3xloc), (-c3yloc), this);
+			g.drawImage(Cpics[CpicNum], (-c4xloc), (-c4yloc), this);
+			g.drawImage(Cpics[CpicNum], (-c5xloc), (-c5yloc), this);
+			g.drawImage(pics[picNum], playerFixedX, playerFixedY, this);
+			g.drawRect((int)cr1.getX(), (int)cr1.getY(), (int)cr1.getWidth(), (int)cr1.getHeight());
+			g.drawRect((int)cr2.getX(), (int)cr2.getY(), (int)cr2.getWidth(), (int)cr2.getHeight());
+			g.drawRect((int)cr3.getX(), (int)cr3.getY(), (int)cr3.getWidth(), (int)cr3.getHeight());
+			g.drawRect((int)cr4.getX(), (int)cr4.getY(), (int)cr4.getWidth(), (int)cr4.getHeight());
+			g.drawRect((int)cr5.getX(), (int)cr5.getY(), (int)cr5.getWidth(), (int)cr5.getHeight());
+			g.drawRect((int)pRect.getX(), (int)pRect.getY(), (int)pRect.getWidth(), (int)pRect.getHeight());
 			}
 			else {
 				g.drawImage(bg, -5100, -1050, 7000, 3000, this); //7000 3000
-				g.drawImage(crabIm1, (-c1xloc), (-c1yloc), this);
-				g.drawImage(crabIm2, (-c2xloc), (-c2yloc), this);
-				g.drawImage(crabIm3, (-c3xloc), (-c3yloc), this);
-				g.drawImage(crabIm4, (-c4xloc), (-c4yloc), this);
-				g.drawImage(crabIm5, (-c5xloc), (-c5yloc), this);
+				g.drawImage(Cpics[CpicNum], (-c1xloc), (-c1yloc), this);
+				g.drawImage(Cpics[CpicNum], (-c2xloc), (-c2yloc), this);
+				g.drawImage(Cpics[CpicNum], (-c3xloc), (-c3yloc), this);
+				g.drawImage(Cpics[CpicNum], (-c4xloc), (-c4yloc), this);
+				g.drawImage(Cpics[CpicNum], (-c5xloc), (-c5yloc), this);
 				g.drawImage(pics[picNum], xloc - 4950, yloc - 860, this);
 			}
 
@@ -121,7 +145,15 @@ public class ResearchGameView{
 			animation[i] = new BufferedImage[images[i].getWidth()/imgWidth];
 			loadImg(images[i],animation[i],animation[i].length);
 		}
-		pics = animation[RDirection.IDEL.ordinal()];
+		Cimages = new BufferedImage[5];
+		Canimation = new BufferedImage[5][0];
+		for(int i = 0; i < 5; i++) {
+			Cimages[i] = createCrabImage();
+			Canimation[i] = new BufferedImage[Cimages[i].getWidth()/imgWidth];
+			loadImg(Cimages[i],Canimation[i],2);
+		}
+		Cpics = Canimation[0];
+		pics = animation[RDirection.IDLE.ordinal()];
 	}
 	private void loadImg(BufferedImage img, BufferedImage[] an ,int frames){
 		for(int i = 0; i < frames; i++){
@@ -132,18 +164,22 @@ public class ResearchGameView{
 		BufferedImage bufferedImage = null;
 		try {
 			bufferedImage = ImageIO.read(new File("assets/research-game/female-scientist-" + direction.getName() + ".png"));
-			bg = ImageIO.read(new File("assets/research-game/research-background.png"));
-			crabIm1 = ImageIO.read(new File("assets/research-game/crab-sheet.png"));
-			crabIm2 = ImageIO.read(new File("assets/research-game/crab-sheet.png"));
-			crabIm3 = ImageIO.read(new File("assets/research-game/crab-sheet.png"));
-			crabIm4 = ImageIO.read(new File("assets/research-game/crab-sheet.png"));
-			crabIm5 = ImageIO.read(new File("assets/research-game/crab-sheet.png"));
+			bg = ImageIO.read(new File("assets/research-game/research-background" + ".png"));
 			return bufferedImage;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
-		// TODO: Change this method so you can load other orc animation bitmaps
+	}
+	private BufferedImage createCrabImage() {
+		BufferedImage bufferedImage = null;
+		try {
+			bufferedImage = ImageIO.read(new File("assets/research-game/crab-sheet.png"));
+			return bufferedImage;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	public void update(ResearchGameModel m){
 		xloc = m.player.getxPos();
@@ -158,11 +194,18 @@ public class ResearchGameView{
 		c4yloc = m.crab4.getCrabYPos();
 		c5xloc = m.crab5.getCrabXPos();
 		c5yloc = m.crab5.getCrabYPos();
+		crabs = m.getCrabs();
 		pLives = m.player.getLives();
+		pRect = m.player.getPlayerRect();
+		cr1 = m.crab1.getCrabRect();
+		cr2 = m.crab2.getCrabRect();
+		cr3 = m.crab3.getCrabRect();
+		cr4 = m.crab4.getCrabRect();
+		cr5 = m.crab5.getCrabRect();
 		switch(m.player.getDirection()){
-			case IDEL:	
-				frameCount = animation[RDirection.IDEL.ordinal()].length;	
-				pics = animation[RDirection.IDEL.ordinal()];
+			case IDLE:	
+				frameCount = animation[RDirection.IDLE.ordinal()].length;	
+				pics = animation[RDirection.IDLE.ordinal()];
 				break;
 			case EAST:
 				frameCount = animation[RDirection.EAST.ordinal()].length;	
@@ -179,6 +222,7 @@ public class ResearchGameView{
 
 		}
 		picNum = (picNum + 1) % frameCount;
+		CpicNum = (CpicNum + 1) % 2;
 		panel.repaint();
 		try {
 			Thread.sleep(80);
