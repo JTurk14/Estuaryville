@@ -1,95 +1,90 @@
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Collection;
-
-/**
- * Model: Contains all the state and logic
- * Does not contain anything about images or graphics, must ask view for that
- *
- * has methods to
- *  detect collision with boundaries
- * decide next direction
- * provide direction
- * provide location
- **/
 
 public class ResearchGameModel{
 	final int xIncr = 15;
     final int yIncr = 14; //originally 14
-	final int startxPos = 75;
-	final int startyPos = 400;
+	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	final int startxPos = (int)screenSize.getWidth() / 8;
+	final int startyPos = (int)screenSize.getHeight() / 3;
+	final int playerFixedX = (int)screenSize.getWidth() / 8;
+	final int playerFixedY = (int)screenSize.getHeight() / 3;
 	final int startingLives = 3;
 	final int imgWidth;
 	final int imgHeight;
 	final int width;
 	final int height;
-	final RDirection startDir = RDirection.IDEL;
+	final RDirection startDir = RDirection.IDLE;
 	Researcher player;
 	Crab crab1;
 	Crab crab2;
 	Crab crab3;
 	Crab crab4;
 	Crab crab5;
+	public Crab[] crabs;
 
 	public ResearchGameModel(int w, int h, int iw, int ih){
 		player = new Researcher(startxPos, startyPos, startDir, startingLives);
 		crab1 = new Crab(-700, -400);
-		crab2 = new Crab(-2500, -1000);
-		crab3 = new Crab(-3500, -900);
-		crab4 = new Crab(-2700, -1050);
-		crab5 = new Crab(-3900, -950);
+		crab2 = new Crab(-2500, -800);
+		crab3 = new Crab(-3500, -800);
+		crab4 = new Crab(-2700, -900);
+		crab5 = new Crab(-3900, -750);
+		crabs = new Crab[5];
+		crabs[0] = crab1;
+		crabs[1] = crab2;
+		crabs[2] = crab3;
+		crabs[3] = crab4;
+		crabs[4] = crab5;
 		this.width = w;
 		this.height = h;
 		this.imgHeight = ih;
 		this.imgWidth = iw;
 	}
-//	public Researcher getPlayer() {
-//		return this.player;
-//	}
-
-	public void updateLocationAndDirection(){
-	if ((crab1.getCrabXPos() <= -80 && crab1.getCrabXPos() >= -120) && (crab1.getCrabYPos() <= -350 && crab1.getCrabYPos() >= -400)) {
-		System.out.println("LOSE");
-		player.lives -= 1;
-	}
 	
-	if ((crab2.getCrabXPos() <= -80 && crab2.getCrabXPos() >= -120) && (crab2.getCrabYPos() <= -350 && crab2.getCrabYPos() >= -400)) {
-		System.out.println("LOSE");
-		player.lives -= 1;
+	public Crab[] getCrabs() {
+		return crabs;
 	}
-	
-	if ((crab3.getCrabXPos() <= -80 && crab3.getCrabXPos() >= -120) && (crab3.getCrabYPos() <= -350 && crab3.getCrabYPos() >= -400)) {
-		System.out.println("LOSE");
-		player.lives -= 1;
-	}
-	
-	if ((crab4.getCrabXPos() <= -80 && crab4.getCrabXPos() >= -120) && (crab4.getCrabYPos() <= -350 && crab4.getCrabYPos() >= -400)) {
-		System.out.println("LOSE");
-		player.lives -= 1;
-	}
-	
-	if ((crab5.getCrabXPos() <= -80 && crab5.getCrabXPos() >= -120) && (crab5.getCrabYPos() <= -350 && crab5.getCrabYPos() >= -400)) {
-		System.out.println("LOSE");
-		player.lives -= 1;
-	}
-	
-	if (player.getxPos() >= 6000) {
-		System.out.print("game over back to main");
-//		System.exit(1);
+	public int getCrabslength() {
+		return crabs.length;
 	}
 
-		
+	//crab x: -120,crab y: -372
+	public void collisionChecker() {
+		for (Crab c : crabs){
+			if (player.playerRect.intersects(c.crabRect)) {
+				player.setLives(player.getLives() - 1);
+			}
+		}
+	}
+	
+	public void endCheck() {
+		if (player.getxPos() >= 6000) {
+			System.out.print("game over back to main");
+			//add sending back to main screen
+		}
+	}
+	
+	public void updateLocationAndDirection(){	
 		if (player.direction.getName().contains("forward-east-sheet")) {
 			player.xPos += xIncr;
 			
-			crab1.crabXPos += 25;
+			crab1.setCrabXPos(crab1.getCrabXPos() + 25);
+			crab1.setCrabRect(crab1.crabXPos, crab1.crabYPos);
 			
-			crab2.crabXPos += 25;
+			crab2.setCrabXPos(crab2.getCrabXPos() + 25);
+			crab2.setCrabRect(crab2.crabXPos, crab2.crabYPos);
 			
-			crab3.crabXPos += 20;
+			crab3.setCrabXPos(crab3.getCrabXPos() + 20);
+			crab3.setCrabRect(crab3.crabXPos, crab3.crabYPos);
 			
-			crab4.crabXPos += 25;
+			crab4.setCrabXPos(crab4.getCrabXPos() + 25);
+			crab4.setCrabRect(crab4.crabXPos, crab4.crabYPos);
 			
-			crab5.crabXPos += 20;
+			crab5.setCrabXPos(crab5.getCrabXPos() + 25);
+			crab5.setCrabRect(crab5.crabXPos, crab5.crabYPos);
 		}
 
 		
@@ -98,53 +93,71 @@ public class ResearchGameModel{
 			player.xPos += xIncr;
 			
 			crab1.crabYPos += yIncr;
-			crab1.crabXPos += 25;
+			crab1.setCrabXPos(crab1.getCrabXPos() + 25);
+			crab1.setCrabRect(crab1.getCrabXPos(), crab1.getCrabYPos());
 			
-			crab2.crabYPos += yIncr;
-			crab2.crabXPos += 25;
+			crab2.setCrabYPos(crab2.getCrabYPos() + yIncr);
+			crab2.setCrabXPos(crab2.getCrabXPos() + 25);
+			crab2.setCrabRect(crab2.crabXPos, crab2.crabYPos);
 			
-			crab3.crabYPos += yIncr;
-			crab3.crabXPos += 20;
+			crab3.setCrabYPos(crab3.getCrabYPos() + yIncr);
+			crab3.setCrabXPos(crab3.getCrabXPos() + 20);
+			crab3.setCrabRect(crab3.crabXPos, crab3.crabYPos);
 			
-			crab4.crabYPos += yIncr;
-			crab4.crabXPos += 25;
+			crab4.setCrabYPos(crab4.getCrabYPos() + yIncr);
+			crab4.setCrabXPos(crab4.getCrabXPos() + 25);
+			crab4.setCrabRect(crab4.crabXPos, crab4.crabYPos);
 			
-			crab5.crabYPos += yIncr;
-			crab5.crabXPos += 28;
+			crab5.setCrabYPos(crab5.getCrabYPos() + yIncr);
+			crab5.setCrabXPos(crab5.getCrabXPos() + 28);
+			crab5.setCrabRect(crab5.crabXPos, crab5.crabYPos);
 		}
-		else if (player.direction.getName().contains("forward-northeast-sheet")) {
+		if (player.direction.getName().contains("forward-northeast-sheet")) {
+
 			player.yPos -= yIncr;
 			player.xPos += xIncr;
 			
 			crab1.crabYPos -= yIncr;
-			crab1.crabXPos += 25;
+			crab1.setCrabXPos(crab1.getCrabXPos() + 25);
+			crab1.setCrabRect(crab1.getCrabXPos(), crab1.getCrabYPos());
 			
-			crab2.crabYPos -= yIncr;
-			crab2.crabXPos += 25;
+			crab2.setCrabYPos(crab2.getCrabYPos() - yIncr);
+			crab2.setCrabXPos(crab2.getCrabXPos() + 25);
+			crab2.setCrabRect(crab2.crabXPos, crab2.crabYPos);
 			
-			crab3.crabYPos -= yIncr;
-			crab3.crabXPos += 20;
+			crab3.setCrabYPos(crab3.getCrabYPos() - yIncr);
+			crab3.setCrabXPos(crab3.getCrabXPos() + 20);
+			crab3.setCrabRect(crab3.crabXPos, crab3.crabYPos);
 			
-			crab4.crabYPos -= yIncr;
-			crab4.crabXPos += 25;
+			crab4.setCrabYPos(crab4.getCrabYPos() - yIncr);
+			crab4.setCrabXPos(crab4.getCrabXPos() + 25);
+			crab4.setCrabRect(crab4.crabXPos, crab4.crabYPos);
 			
-			crab5.crabYPos -= yIncr;
-			crab5.crabXPos += 28;
+			crab5.setCrabYPos(crab5.getCrabYPos() - yIncr);
+			crab5.setCrabXPos(crab5.getCrabXPos() + 28);
+			crab5.setCrabRect(crab5.crabXPos, crab5.crabYPos);
 		}
 		
 		if (player.direction.getName().contains("idle-sheet")) {
-			player.yPos = player.yPos;
-			player.xPos = player.xPos;
 			
-			crab1.crabXPos += 25;
 			
-			crab2.crabXPos += 25;
+			player.yPos += 0;
+			player.xPos += 0;
 			
-			crab3.crabXPos += 20;
+			crab1.setCrabXPos(crab1.getCrabXPos() + 10);
+			crab1.setCrabRect(crab1.getCrabXPos(), crab1.getCrabYPos());
 			
-			crab4.crabXPos += 25;
+			crab2.setCrabXPos(crab2.getCrabXPos() + 10);
+			crab2.setCrabRect(crab2.crabXPos, crab2.crabYPos);
 			
-			crab5.crabXPos += 28;
+			crab3.setCrabXPos(crab3.getCrabXPos() + 5);
+			crab3.setCrabRect(crab3.crabXPos, crab3.crabYPos);
+			
+			crab4.setCrabXPos(crab4.getCrabXPos() + 10);
+			crab4.setCrabRect(crab4.crabXPos, crab4.crabYPos);
+			
+			crab5.setCrabXPos(crab5.getCrabXPos() + 13);
+			crab5.setCrabRect(crab5.crabXPos, crab5.crabYPos);
 		}
 		
 	}

@@ -1,6 +1,6 @@
 public enum RDirection {
 
-	IDEL("idel-sheet"),
+	IDLE("idle-sheet"),
 	NORTHEAST("forward-northeast-sheet"),
 	EAST("forward-east-sheet"),
 	SOUTHEAST("forward-southeast-sheet");
