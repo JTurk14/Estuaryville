@@ -1,6 +1,7 @@
 
 import java.util.Random;
 
+//A class to represent Bird objects
 public class Bird {
 	int xSpd, ySpd;
 	int xPos, yPos;
