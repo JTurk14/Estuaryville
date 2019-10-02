@@ -1,3 +1,5 @@
+//The class defines the camera object to be used within the BirdWatchingGame
+
 public class Camera {
 	private int cXPos;
 	private int cYPos;
